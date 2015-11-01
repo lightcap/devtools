@@ -13,6 +13,7 @@ require 'adamantium'
 
 # Wrapped tools
 require 'flay'
+require 'rubocop'
 require 'rspec'
 require 'rspec/its'
 require 'simplecov'
@@ -86,6 +87,7 @@ require 'devtools/project/initializer/rake'
 require 'devtools/project/initializer/rspec'
 require 'devtools/flay'
 require 'devtools/rake/flay'
+require 'devtools/rake/rubocop'
 
 # Devtools self initialization
 module Devtools
