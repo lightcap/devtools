@@ -15,6 +15,7 @@ require 'adamantium'
 require 'flay'
 require 'rubocop'
 require 'rspec'
+require 'mutant'
 require 'rspec/its'
 require 'simplecov'
 
@@ -88,6 +89,7 @@ require 'devtools/project/initializer/rspec'
 require 'devtools/flay'
 require 'devtools/rake/flay'
 require 'devtools/rake/rubocop'
+require 'devtools/rake/mutant'
 
 # Devtools self initialization
 module Devtools
