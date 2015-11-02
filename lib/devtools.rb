@@ -14,6 +14,8 @@ require 'adamantium'
 # Wrapped tools
 require 'flay'
 require 'rubocop'
+require 'reek'
+require 'reek/cli/application'
 require 'rspec'
 require 'mutant'
 require 'rspec/its'
@@ -90,6 +92,7 @@ require 'devtools/flay'
 require 'devtools/rake/flay'
 require 'devtools/rake/rubocop'
 require 'devtools/rake/mutant'
+require 'devtools/rake/reek'
 
 # Devtools self initialization
 module Devtools
