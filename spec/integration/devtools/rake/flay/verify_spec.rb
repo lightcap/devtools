@@ -2,12 +2,23 @@ describe Devtools::Rake::Flay, '#verify' do
   let(:tempfile)    { Tempfile.new(%w[file .rb], Dir.mktmpdir) }
   let(:file)        { Pathname(tempfile.path)                  }
   let(:directories) { [file.dirname.to_s]                      }
+  let(:instance)    { described_class.new(config)              }
 
   let(:ruby) do
     <<-ERUBY
     def foo; end
     def bar; end
     ERUBY
+  end
+
+  let(:config) do
+    instance_double(
+      Devtools::Config::Flay,
+      threshold:   threshold,
+      total_score: total_score,
+      lib_dirs:    directories,
+      excludes:    []
+    )
   end
 
   around(:each) do |example|
@@ -28,11 +39,8 @@ describe Devtools::Rake::Flay, '#verify' do
   end
 
   context 'reporting' do
-    let(:options) do
-      { threshold: 3, total_score: 3, lib_dirs: directories, excludes: [] }.freeze
-    end
-
-    let(:instance) { described_class.new(options) }
+    let(:threshold)   { 3 }
+    let(:total_score) { 3 }
 
     it 'measures total mass' do
       allow(::Flay).to receive(:new).and_call_original
@@ -48,9 +56,8 @@ describe Devtools::Rake::Flay, '#verify' do
   end
 
   context 'when theshold is too low' do
-    let(:instance) do
-      described_class.new(threshold: 0, total_score: 0, lib_dirs: directories, excludes: [])
-    end
+    let(:threshold)   { 0 }
+    let(:total_score) { 0 }
 
     specify do
       expect { instance.verify }
@@ -60,9 +67,8 @@ describe Devtools::Rake::Flay, '#verify' do
   end
 
   context 'when threshold is too high' do
-    let(:instance) do
-      described_class.new(threshold: 1000, total_score: 0, lib_dirs: directories, excludes: [])
-    end
+    let(:threshold)   { 1000 }
+    let(:total_score) { 3    }
 
     specify do
       expect { instance.verify }
@@ -72,9 +78,8 @@ describe Devtools::Rake::Flay, '#verify' do
   end
 
   context 'when total is too high' do
-    let(:instance) do
-      described_class.new(threshold: 3, total_score: 50, lib_dirs: directories, excludes: [])
-    end
+    let(:threshold)   { 3  }
+    let(:total_score) { 50 }
 
     specify do
       expect { instance.verify }
@@ -84,6 +89,9 @@ describe Devtools::Rake::Flay, '#verify' do
   end
 
   context 'when duplicate mass is greater than 0' do
+    let(:threshold)   { 3 }
+    let(:total_score) { 5 }
+
     let(:ruby) do
       <<-ERUBY
       def foo
@@ -106,10 +114,6 @@ Similar code found in :defn (mass = 10)
 REPORT
     end
 
-    let(:instance) do
-      described_class.new(threshold: 3, total_score: 5, lib_dirs: directories, excludes: [])
-    end
-
     specify do
       expect { instance.verify }
         .to raise_error(SystemExit)
@@ -124,6 +128,9 @@ REPORT
   end
 
   context 'when multiple duplicate masses' do
+    let(:threshold)   { 5 }
+    let(:total_score) { 8 }
+
     let(:ruby) do
       <<-ERUBY
       def foo; end
@@ -142,20 +149,15 @@ REPORT
       ERUBY
     end
 
-    let(:instance) do
-      described_class.new(threshold: 5, total_score: 8, lib_dirs: directories, excludes: [])
-    end
-
     it 'sums masses for total' do
       expect { instance.verify }.to_not raise_error
     end
   end
 
   context 'when no duplication masses' do
-    let(:ruby) { '' }
-    let(:instance) do
-      described_class.new(threshold: 0, total_score: 0, lib_dirs: directories, excludes: [])
-    end
+    let(:threshold)   { 0  }
+    let(:total_score) { 0  }
+    let(:ruby)        { '' }
 
     specify do
       expect { instance.verify }.to_not raise_error

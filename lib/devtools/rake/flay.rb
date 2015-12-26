@@ -2,13 +2,17 @@ module Devtools
   module Rake
     # Flay metric runner
     class Flay
-      include Anima.new(:threshold, :total_score, :lib_dirs, :excludes),
+      extend Forwardable
+
+      include Concord.new(:config),
               Procto.call(:verify),
               Adamantium
 
       BELOW_THRESHOLD = 'Adjust flay threshold down to %d'.freeze
       TOTAL_MISMATCH  = 'Flay total is now %d, but expected %d'.freeze
       ABOVE_THRESHOLD = '%d chunks have a duplicate mass > %d'.freeze
+
+      def_delegators :config, :threshold, :total_score, :lib_dirs, :excludes
 
       # Verify code specified by `files` does not violate flay expectations
       #
