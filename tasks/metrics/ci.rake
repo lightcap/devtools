@@ -10,6 +10,7 @@ namespace :ci do
     metrics:flay
     metrics:reek
     spec:integration
+    spec:features
   ]
 
   desc 'Run metrics (except mutant)'
